@@ -1,29 +1,38 @@
 const routes = require("express").Router();
-const subcategory = require("../models/subCategory")
+const subcategory = require("../models/subCategory");
+const product = require("../models/product");
 
-routes.get("/",async(req,res)=>{
-let result= await subcategory.find();
- res.send({success : true, result :result});
+routes.get("/", async (req, res) => {
+    let result = await subcategory.find();
+    res.send({ success: true, result: result });
 })
 
-routes.get("/:id",async(req,res)=>{
- let result = await subcategory.find({_id : req.params.id});
- res.send({success : true,result : result[0]});
+routes.get("/subcate/:catename",async(req,res)=>{
+    let result = await subcategory.find({category : req.params.catename});
+    res.send({success : true, result : result})
 })
 
-routes.post("/",async(req,res)=>{
+routes.get("/:id", async (req, res) => {
+    let result = await subcategory.find({ _id: req.params.id });
+    res.send({ success: true, result: result[0] });
+})
+
+routes.post("/", async (req, res) => {
     await subcategory.create(req.body);
-    res.send({success : true});
+    res.send({ success: true });
 })
 
-routes.put("/:id",async(req,res)=>{
-    let result = await subcategory.updateMany({_id : req.params.id});
-    res.send({success : true, result :result[0]})
+routes.put("/:id", async (req, res) => {
+    let result = await subcategory.updateMany({ _id: req.params.id });
+    res.send({ success: true, result: result[0] })
 })
 
-routes.delete("/:id",async(req,res)=>{
-    await subcategory.deleteMany({_id : req.params.id});
-    res.send({success : true})
+routes.delete("/:id", async (req, res) => {
+    let result = await subcategory.find({_id : req.params.id});
+    let subCate = result[0].name;
+    await product.deleteMany({subcategory : subCate});
+    await subcategory.deleteMany({ _id: req.params.id });
+    res.send({ success: true })
 })
 
-module.exports =routes;
+module.exports = routes;
