@@ -1,7 +1,9 @@
 const routes = require("express").Router();
 const cate = require("../models/category");
 const subcate = require("../models/subCategory");
-const product = require("../models/product")
+const product = require("../models/product");
+const fs = require("fs");
+const path = require("path");
 
 routes.get("/", async (req,res)=>{
     let result = await cate.find();
@@ -26,6 +28,12 @@ routes.put("/:id",async(req,res)=>{
 routes.delete("/:id",async(req,res)=>{
     let result = await cate.find({_id : req.params.id})
     let cateName = result[0].name
+    let pro = await product.find({category :cateName});
+    let image = pro[0].image;
+    
+    let imagepath = path.resolve()+"/assets/product-images/"+image;
+    fs.unlinkSync(imagepath);
+
     await product.deleteMany({category : cateName})
     await subcate.deleteMany({category : cateName})
     await cate.deleteMany({_id : req.params.id})
